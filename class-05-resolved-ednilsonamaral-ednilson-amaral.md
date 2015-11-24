@@ -198,7 +198,8 @@ Fetched 5 record(s) in 4ms
 
 ## Group ou Aggregate contando a quantidade de pokemons de cada tipo
 
-```  
+### Group  
+```js  
 be-mean> db.pokemons.group({  
 initial: {total: 0},  
 reduce: function(curr, result){  
@@ -236,6 +237,21 @@ result.total++;
   }  
 ]  
 ```
+
+
+### Aggregate  
+
+```js  
+be-mean> db.pokemons.aggregate([  
+    { $unwind: '$types'},  
+    {$group: {  
+      _id: '$types',  
+      count: {$sum: 1}  
+      }  
+    }  
+    ]);  
+```
+
 
 ## Realizar 3 counts na collection pokemons
 
