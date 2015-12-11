@@ -1,0 +1,59 @@
+users{
+	name,
+	bio,
+	email,
+	username,
+	password,
+	date_register,
+	last_access,
+	online,
+	disable,
+	hash_token
+}
+
+projects{
+	name,
+	description,
+	date_begin,
+	date_dream,
+	date_end,
+	visible,
+	realocate,
+	expired,
+	visualizable_mod,
+
+	tags: [],
+
+	members: [{
+		member_id: users.id,
+		type_member,
+	}],
+
+	goals: [{
+		name,
+		description,
+		date_begin,
+		date_dream,
+		date_end,
+		realocate,
+		expired,
+
+		tags: [],
+
+		activities: [{
+			name,
+			description,
+			date_begin,
+			date_dream,
+			date_end,
+			realocate,
+			expired,
+		}],
+	}],
+
+	comments: [{
+		text,
+		date_comment,
+		member_id: member_id,
+	}]
+}
