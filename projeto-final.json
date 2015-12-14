@@ -1,59 +1,65 @@
 users{
-	name,
-	bio,
-	email,
-	username,
-	password,
-	date_register,
-	last_access,
-	online,
-	disable,
-	hash_token
+	name: String,
+	bio: String,
+	email: String,
+
+	auth: [{
+		username: String,
+		password: String,
+		last_access: Date,
+		online: boolean,
+		disable: boolean,
+		hash_token: String
+	}],
+
+	date_register: Date,
+	avatar_path: String
 }
 
 projects{
-	name,
-	description,
-	date_begin,
-	date_dream,
-	date_end,
-	visible,
-	realocate,
-	expired,
+	name: String,
+	description: String,
+	date_begin: Date,
+	date_dream: Date,
+	date_end: Date,
+	visible: boolean,
+	realocate: boolean,
+	expired: boolean,
 	visualizable_mod,
 
 	tags: [],
 
 	members: [{
-		member_id: users.id,
-		type_member,
+		name: String,
+		type_member: String,
+		notify: boolean
 	}],
 
 	goals: [{
-		name,
-		description,
-		date_begin,
-		date_dream,
-		date_end,
-		realocate,
-		expired,
+		name: String,
+		description: String,
+		date_begin: Date,
+		date_dream: Date,
+		date_end: Date,
+		realocate: boolean,
+		expired: booelan,
 
 		tags: [],
 
 		activities: [{
-			name,
-			description,
-			date_begin,
-			date_dream,
-			date_end,
-			realocate,
-			expired,
+			name: String,
+			description: String,
+			date_begin: Date,
+			date_dream: Date,
+			date_end: Date,
+			realocate: boolean,
+			expired: boolean
 		}],
 	}],
 
 	comments: [{
-		text,
-		date_comment,
-		member_id: member_id,
+		user_name: users.name,
+		text: String,
+		date_comment: String
 	}]
 }
