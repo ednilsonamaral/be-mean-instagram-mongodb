@@ -1,0 +1,47 @@
+{
+	"name": "Projeto 1",
+	"description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+	"date_begin": null,
+	"date_dream": null,
+	"date_end": null,
+	"visible": false,
+	"realocate": false,
+	"expired": false,
+	"visualizable_mod": null,
+
+	"tags": ["web", "nfl", "be mean"],
+
+	"members": [{
+		"name": "",
+		"type_member": "",
+		"notify": false
+	}],
+
+	"goals": [{
+		"name": "",
+		"description": "",
+		"date_begin": null,
+		"date_dream": null,
+		"date_end": null,
+		"realocate": false,
+		"expired": false,
+
+		"tags": [],
+
+		"activities": [{
+			"name": "",
+			"description": "",
+			"date_begin": null,
+			"date_dream": null,
+			"date_end": null,
+			"realocate": false,
+			"expired": false
+		}],
+	}],
+
+	"comments": [{
+		"user_name": users.name,
+		"text": "",
+		"date_comment": null
+	}]
+}
