@@ -1,9 +1,10 @@
 # MongoDb - Projeto Final  
 **Autor:** Ednilson Amaral  
-**Data:** Date.now() //em timestamp
+**Data:** 15/12/2015 às 01:55
 
 
-## Para qual sistema você usaria o MogoDB (diferente desse)?
+## Para qual sistema você usaria o MongoDB (diferente desse)?  
+Estou começando a me aventurar agora com NoSQL, conhecendo tudo agora, MongoDB, etc. E, após as aulas do Suissa, pude perceber, ainda com um pouco de mentalidade relacional, que banco de dados não relacionais podem ser utilizados para qualquer sistema. Especificamente para aplicações real-time, como plataformas do Twitter, Facebook, Instagram. De uma forma resumida, acredito que qualquer aplicação de real-time pode ser utilizado MongoDB, tanto pela sua praticidade, como suas inúmeras vantagens quando falamos de performance, etc.
 
 
 ## Qual a modelagem da sua coleção de `users`?  
