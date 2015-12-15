@@ -565,24 +565,627 @@ Fetched 4 record(s) in 7ms
 
 ## Update - alteração  
 
-### Adicione para todos os projetos o campo views: 0.
-### Adicione 1 tag diferente para cada projeto.
-### Adicione 2 membros diferentes para cada projeto.
-### Adicione 1 comentário em cada atividade, deixe apenas 1 projeto sem.
-### Adicione 1 projeto inteiro com UPSERT.
+### Adicione para todos os projetos o campo views: 0.  
+
+Eu não consegui inserir em todos os 5 projetos de uma só vez com o código abaixo:  
+
+```  
+be-mean-mongodb> var query = {}  
+  
+be-mean-mongodb> var mod = {$set: {views: 0}}  
+
+be-mean-mongodb> mod  
+{  
+  "$set": {  
+    "views": 0  
+  }  
+}  
+
+be-mean-mongodb> db.projects.update(query, mod)  
+Updated 1 existing record(s) in 3ms  
+WriteResult({  
+  "nMatched": 1,  
+  "nUpserted": 0,  
+  "nModified": 0  
+})  
+```  
+
+Tentei passando como parâmetro os {} vazios, para que inserisse em todos os objetos. Mas não foi possível e não entendi o motivo disso não ter dado certo.  
+
+Como alternativa, resolvi fazer uma condição `for` para ir modificando o nome do projeto, assim ir adicionando o campo `views: 0`. Sinceramente, odiei e fiquei com vergonha dessa solução, pior que amadora. :/  
+
+```  
+be-mean-mongodb> for(var i=0; i<=5; i++){  
+  var query = {"name": "Projeto " + i};  
+  var mod = {$set: {views: 0}};  
+
+  db.projects.update(query, mod);  
+ 
+  i++  
+}  
+
+Updated 0 record(s) in 2ms  
+Updated 1 existing record(s) in 2ms  
+Updated 1 existing record(s) in 3ms  
+4  
+}  
+```
+
+
+### Adicione 1 tag diferente para cada projeto.  
+
+```  
+be-mean-mongodb> for(var i=0; i<=5; i++){  
+  var query = {"name": "Projeto " + i};  
+ 
+  var mod = {$push: {"tags": "tag"+i}};  
+
+  db.projects.update(query, mod);  
+ 
+  i++  
+}
+
+Updated 0 record(s) in 3ms  
+Updated 1 existing record(s) in 3ms  
+Updated 1 existing record(s) in 3ms  
+4  
+```
+
+
+### Adicione 2 membros diferentes para cada projeto.  
+
+```  
+be-mean-mongodb> var query = {"name": "Projeto 1"}  
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 1", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> db.projects.update(query, mod)  
+
+Updated 1 existing record(s) in 3ms  
+WriteResult({  
+  "nMatched": 1,  
+  "nUpserted": 0,  
+  "nModified": 1  
+})  
+
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 2", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> db.projects.update(query, mod)  
+
+Updated 1 existing record(s) in 6ms  
+WriteResult({  
+  "nMatched": 1,  
+  "nUpserted": 0,  
+  "nModified": 1  
+})  
+
+be-mean-mongodb> var query = {"name": "Projeto 2"}  
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 1", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> db.projects.update(query, mod)  
+
+Updated 1 existing record(s) in 9ms  
+WriteResult({  
+  "nMatched": 1,  
+  "nUpserted": 0,  
+  "nModified": 1  
+})  
+
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 2", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> db.projects.update(query, mod)  
+
+Updated 1 existing record(s) in 5ms  
+WriteResult({  
+  "nMatched": 1,  
+  "nUpserted": 0,  
+  "nModified": 1  
+})  
+
+be-mean-mongodb> var query = {"name": "Projeto 3"}  
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 1", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> db.projects.update(query, mod)  
+
+Updated 1 existing record(s) in 3ms  
+WriteResult({  
+  "nMatched": 1,  
+  "nUpserted": 0,  
+  "nModified": 1  
+})  
+
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 2", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> db.projects.update(query, mod)  
+
+Updated 1 existing record(s) in 2ms  
+WriteResult({  
+  "nMatched": 1,  
+  "nUpserted": 0,  
+  "nModified": 1  
+})  
+
+be-mean-mongodb> var query = {"name": "Projeto 4"}  
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 1", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> db.projects.update(query, mod)  
+
+Updated 1 existing record(s) in 8ms  
+WriteResult({  
+  "nMatched": 1,  
+  "nUpserted": 0,  
+  "nModified": 1  
+})  
+
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 2", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> db.projects.update(query, mod)  
+
+Updated 1 existing record(s) in 7ms  
+WriteResult({  
+  "nMatched": 1,  
+  "nUpserted": 0,  
+  "nModified": 1  
+})  
+
+be-mean-mongodb> var query = {"name": "Projeto 5"}  
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 1", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> db.projects.update(query, mod)  
+
+Updated 1 existing record(s) in 3ms  
+WriteResult({  
+  "nMatched": 1,  
+  "nUpserted": 0,  
+  "nModified": 1  
+})  
+
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 2", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> db.projects.update(query, mod)  
+
+Updated 1 existing record(s) in 6ms  
+WriteResult({  
+  "nMatched": 1,  
+  "nUpserted": 0,  
+  "nModified": 1  
+})  
+```
+
+
+### Adicione 1 comentário em cada atividade, deixe apenas 1 projeto sem.  
+
+```  
+be-mean-mongodb> for(var i=0; i<=4; i++){  
+  var query = {"name": "Projeto " + i};  
+  var mod = {$push: {"comments": [{"user_name": "Ednilson Amaral", "text": "Apenas mais um comentário qualquer aqui, parça!", "date_comment": null}]}};  
+ 
+  db.projects.update(query, mod);  
+ 
+  i++  
+}  
+
+Updated 0 record(s) in 3ms  
+Updated 1 existing record(s) in 3ms  
+Updated 1 existing record(s) in 2ms  
+4  
+```
+
+
+### Adicione 1 projeto inteiro com UPSERT.  
+
+```  
+be-mean-mongodb> var query = {"name": "Novo Projeto Qualquer"}  
+
+be-mean-mongodb> var mod = {  
+  $set: {"views": 1},  
+
+  $setOnInsert: {  
+    "name": "Novo Projeto Qualquer",  
+    "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit",  
+    "date_begin": null,  
+    "date_dream": null,  
+    "date_end": null,  
+    "visible": false,  
+    "realocate": false,  
+    "expired": false,  
+    "visualizable_mod": null,  
+     
+    "tags": [],  
+     
+    "members": [],  
+
+    "goals": [{  
+    "name": "Lionel Messi",  
+    "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit",  
+    "date_begin": null,  
+    "date_dream": null,  
+    "date_end": null,  
+    "realocate": false,  
+    "expired": false,  
+
+    "tags": [],  
+
+    "activities": []  
+    }],  
+
+    "comments": []  
+  }  
+}  
+
+be-mean-mongodb> var opt = {upsert: true}  
+be-mean-mongodb> db.projects.update(query, mod, opt)  
+Updated 1 new record(s) in 4ms  
+WriteResult({  
+  "nMatched": 0,  
+  "nUpserted": 1,  
+  "nModified": 0,  
+  "_id": ObjectId("566f7daf6a9e204090ad1b70")  
+})  
+
+be-mean-mongodb> var query = {"_id": ObjectId("566f7daf6a9e204090ad1b70")}  
+be-mean-mongodb> query  
+{  
+  "_id": ObjectId("566f7daf6a9e204090ad1b70")  
+}  
+
+be-mean-mongodb> db.projects.find(query)  
+{  
+  "_id": ObjectId("566f7daf6a9e204090ad1b70"),  
+  "name": "Novo Projeto Qualquer",  
+  "views": 1,  
+  "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit",  
+  "date_begin": null,  
+  "date_dream": null,  
+  "date_end": null,  
+  "visible": false,  
+  "realocate": false,  
+  "expired": false,  
+  "visualizable_mod": null,  
+  "tags": [ ],  
+  "members": [ ],  
+  "goals": [  
+    {  
+      "name": "Lionel Messi",  
+      "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit",  
+      "date_begin": null,  
+      "date_dream": null,  
+      "date_end": null,  
+      "realocate": false,  
+      "expired": false,  
+      "tags": [ ],  
+      "activities": [ ]  
+    }  
+  ],  
+  "comments": [ ]  
+}  
+Fetched 1 record(s) in 6ms  
+```
+
 
 ## Delete - remoção  
 
-### Apague todos os projetos que não possuam tags.
-### Apague todos os projetos que não possuam comentários nas atividades.
-### Apague todos os projetos que não possuam atividades.
-### Escolha 2 usuário e apague todos os projetos em que os 2 fazem parte.
-### Apague todos os projetos que possuam uma determinada tag em goal.
+### Apague todos os projetos que não possuam tags.  
+
+```  
+be-mean-mongodb> db.projects.remove({"tags": []})  
+Removed 1 record(s) in 3ms  
+WriteResult({  
+  "nRemoved": 1  
+})  
+```
 
 
-## Sharding
-// coloque aqui todos os comandos que você executou
+### Apague todos os projetos que não possuam comentários nas atividades.  
+
+```  
+be-mean-mongodb> db.projects.remove({"comments": []})  
+Removed 0 record(s) in 3ms  
+WriteResult({  
+  "nRemoved": 0  
+})  
+```
 
 
-## Replica
-// coloque aqui todos os comandos que você executou
+### Apague todos os projetos que não possuam atividades.  
+
+```  
+be-mean-mongodb> var query = {"goals.activities": []}  
+
+be-mean-mongodb> db.projects.remove(query)  
+Removed 1 record(s) in 4ms  
+WriteResult({  
+  "nRemoved": 1  
+})  
+```
+
+
+### Escolha 2 usuários e apague todos os projetos em que os 2 fazem parte.  
+
+```  
+be-mean-mongodb> var query = {"comments.user_name": "Ednilson Amaral"}  
+
+be-mean-mongodb> query  
+{  
+  "comments.user_name": "Ednilson Amaral"  
+}  
+
+be-mean-mongodb> db.projects.remove(query)  
+Removed 1 record(s) in 10ms  
+WriteResult({  
+  "nRemoved": 1  
+})  
+
+be-mean-mongodb> var query = {"comments.user_name": "Laís Ramos"}  
+
+be-mean-mongodb> db.projects.remove(query)  
+Removed 1 record(s) in 3ms  
+WriteResult({  
+  "nRemoved": 1  
+})  
+```
+
+
+### Apague todos os projetos que possuam uma determinada tag em goal.  
+
+```  
+be-mean-mongodb> var query = {"goals.tags": {$in: [/tchau/i]}}  
+
+be-mean-mongodb> query  
+{  
+  "goals.tags": {  
+    "$in": [  
+      /tchau/i  
+    ]  
+  }  
+}  
+
+be-mean-mongodb> db.projects.remove(query)  
+Removed 1 record(s) in 4ms  
+WriteResult({  
+  "nRemoved": 1  
+})  
+```
+
+
+## Gerenciamento de usuários  
+
+### Crie um usuário com permissões APENAS de Leitura.  
+
+```  
+be-mean-mongodb> db.createUser(  
+  {  
+    user: "ednilson",  
+    pwd: "123456",  
+    roles: [{role: "read", db: "be-mean-mongodb"}]  
+  }  
+)  
+
+Successfully added user: {  
+  "user": "ednilson",  
+  "roles": [  
+    {  
+      "role": "read",  
+      "db": "be-mean-mongodb"  
+    }  
+  ]  
+}  
+```
+
+
+### Crie um usuário com permissões de Escrita e Leitura.  
+
+```  
+be-mean-mongodb> db.createUser(  
+  {  
+    user: "admin",  
+    pwd: "admin123",  
+    roles: [{role: "readWrite", db: "be-mean-mongodb"}]  
+  }  
+)  
+
+Successfully added user: {  
+  "user": "admin",  
+  "roles": [  
+    {  
+      "role": "readWrite",  
+      "db": "be-mean-mongodb"  
+    }  
+  ]  
+}  
+```
+
+
+### Adicionar o papel grantRolesToUser e revokeRole para o usuário com Escrita e Leitura.  
+
+Primeiramente o `grantRolesToUser`:  
+
+```  
+be-mean-mongodb> db.runCommand({  
+    grantRolesToUser: "admin",  
+    roles: [  
+        {  
+          role: "read", db: "be-mean-mongodb"  
+        },  
+        "readWrite"  
+    ],  
+    writeConcern: {w: "majority", wtimeout: 2000}  
+  }  
+)  
+
+{  
+  "ok": 1  
+}  
+```  
+
+Então, o `revokeRolesFromUser`:  
+
+```  
+db.runCommand({  
+  revokeRolesFromUser: "admin",  
+  roles: [  
+    {  
+      role: "read", db: "be-mean-mongodb"  
+    },  
+    "readWrite"  
+  ],  
+  writeConcern: {w: "majority"}  
+  }  
+)  
+
+{  
+  "ok": 1  
+}  
+```
+
+
+### Listar todos os usuários com seus papéis e ações.  
+
+```  
+be-mean-mongodb> db.runCommand({usersInfo: 1})  
+{  
+  "users": [  
+    {  
+      "_id": "be-mean-mongodb.ednilson",  
+      "user": "ednilson",  
+      "db": "be-mean-mongodb",  
+      "roles": [  
+        {  
+          "role": "read",  
+          "db": "be-mean-mongodb"  
+        }  
+      ]  
+    },  
+    {  
+      "_id": "be-mean-mongodb.admin",  
+      "user": "admin",  
+      "db": "be-mean-mongodb",  
+      "roles": [ ]  
+    }  
+  ],  
+  "ok": 1  
+}  
+```
+
+
+## Cluster  
+
+### Servidor  
+
+```  
+ednilson@EDNILSON-NB:/var/www/be-mean-instagram-mongodb$ sudo mongod --dbpath /var/lib/mongodb --configsvr --port 27050  
+```
+
+### Router  
+
+```  
+ednilson@EDNILSON-NB:/var/www/be-mean-instagram-mongodb$ mongos --configdb localhost:27050 --port 27060  
+```
+
+### Shardings  
+
+#### Criando os shardings  
+
+```  
+ednilson@EDNILSON-NB:/var/lib/mongodb$ sudo mkdir /var/lib/mongodb/shard1  
+ednilson@EDNILSON-NB:/var/lib/mongodb$ sudo mkdir /var/lib/mongodb/shard2  
+ednilson@EDNILSON-NB:/var/lib/mongodb$ sudo mkdir /var/lib/mongodb/shard3  
+```  
+
+#### Iniciando os shards  
+
+```  
+ednilson@EDNILSON-NB:~$ sudo mongod --port 27070 --dbpath /var/lib/mongodb/shard1  
+ednilson@EDNILSON-NB:~$ sudo mongod --port 27080 --dbpath /var/lib/mongodb/shard2  
+ednilson@EDNILSON-NB:~$ sudo mongod --port 27090 --dbpath /var/lib/mongodb/shard3  
+```  
+
+#### Registrando os shards no router  
+
+```  
+ednilson@EDNILSON-NB:~$ mongo --port 27060 --host localhost  
+MongoDB shell version: 3.2.0  
+connecting to: localhost:27060/test  
+Mongo-Hacker 0.0.8  
+EDNILSON-NB:27060(mongos-3.2.0)[mongos] test>  
+
+[mongos] test> sh.addShard("localhost:27070")  
+{  
+  "shardAdded": "shard0000",  
+  "ok": 1  
+}  
+
+[mongos] test> sh.addShard("localhost:27080")  
+{  
+  "shardAdded": "shard0001",  
+  "ok": 1  
+}  
+
+[mongos] test> sh.addShard("localhost:27090")  
+{  
+  "shardAdded": "shard0002",  
+  "ok": 1  
+}  
+```  
+
+#### Especificando qual *database* e qual coleção iremos *shardear*  
+
+```  
+[mongos] test> sh.enableSharding("be-mean-mongodb")  
+{  
+  "ok": 1  
+}  
+
+[mongos] test> sh.shardCollection("be-mean-mongodb.projects", {"_id": 1})  
+{  
+  "collectionsharded": "be-mean-mongodb.projects",  
+  "ok": 1  
+}  
+```
+
+### Replicas  
+
+#### Criando as replicas  
+
+```  
+ednilson@EDNILSON-NB:/var/lib/mongodb$ sudo mkdir /var/lib/mongodb/rs1  
+ednilson@EDNILSON-NB:/var/lib/mongodb$ sudo mkdir /var/lib/mongodb/rs2  
+ednilson@EDNILSON-NB:/var/lib/mongodb$ sudo mkdir /var/lib/mongodb/rs3  
+
+ednilson@EDNILSON-NB:/var/www/be-mean-instagram-mongodb$ sudo mongod --replSet replica_set --port 27100 --dbpath /var/lib/mongodb/rs1  
+
+ednilson@EDNILSON-NB:/var/www/be-mean-instagram-mongodb$ sudo mongod --replSet replica_set --port 27200 --dbpath /var/lib/mongodb/rs2  
+
+ednilson@EDNILSON-NB:/var/www/be-mean-instagram-mongodb$ sudo mongod --replSet replica_set --port 27300 --dbpath /var/lib/mongodb/rs3  
+```  
+
+#### Iniciando uma replica **primary**  
+
+```  
+ednilson@EDNILSON-NB:~$ mongo --port 27100  
+MongoDB shell version: 3.2.0  
+connecting to: 127.0.0.1:27100/test  
+Mongo-Hacker 0.0.8  
+Server has startup warnings:  
+2015-12-15T01:43:36.680-0200 I CONTROL  [initandlisten] ** WARNING: You are running this process as the root user, which is not recommended.  
+2015-12-15T01:43:36.680-0200 I CONTROL  [initandlisten]  
+2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten]  
+2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/defrag is 'always'.  
+2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten] **        We suggest setting it to 'never'  
+2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten]  
+2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten] ** WARNING: soft rlimits too low. rlimits set to 22582 processes, 65536 files. Number of processes should be at least 32768 : 0.5 times number of files.  
+2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten]  
+EDNILSON-NB:27100(mongod-3.2.0) test> use be-mean-mongodb
+switched to db be-mean-mongodb
+EDNILSON-NB:27100(mongod-3.2.0) [PRIMARY] be-mean-mongodb>  
+```  
+
+#### Iniciando uma replica **secondary**  
+
+```  
+ednilson@EDNILSON-NB:~$ mongo --port 27200  
+MongoDB shell version: 3.2.0  
+connecting to: 127.0.0.1:27200/test  
+Mongo-Hacker 0.0.8  
+Server has startup warnings:  
+2015-12-15T01:43:36.680-0200 I CONTROL  [initandlisten] ** WARNING: You are running this process as the root user, which is not recommended.  
+2015-12-15T01:43:36.680-0200 I CONTROL  [initandlisten]  
+2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten]  
+2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/defrag is 'always'.  
+2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten] **        We suggest setting it to 'never'  
+2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten]  
+2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten] ** WARNING: soft rlimits too low. rlimits set to 22582 processes, 65536 files. Number of processes should be at least 32768 : 0.5 times number of files.  
+2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten]  
+EDNILSON-NB:27100(mongod-3.2.0) test> use be-mean-mongodb
+switched to db be-mean-mongodb
+EDNILSON-NB:27100(mongod-3.2.0) [SECONDARY] be-mean-mongodb>  
+```
