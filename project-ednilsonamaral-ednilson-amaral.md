@@ -34,51 +34,60 @@ users{
 
 ```  
 projects{  
-	name: String,  
-	description: String,  
-	date_begin: Date,  
-	date_dream: Date,  
-	date_end: Date,  
-	visible: boolean,  
-	realocate: boolean,  
-	expired: boolean,  
-	visualizable_mod,  
+  name: String,  
+  description: String,  
+  date_begin: Date,  
+  date_dream: Date,  
+  date_end: Date,  
+  visible: boolean,  
+  realocate: boolean,  
+  expired: boolean,  
+  visualizable_mod,  
 
-	tags: [],  
+  tags: [],  
 
-	members: [{  
-		name: String,  
-		type_member: String,  
-		notify: boolean  
-	}],  
+  members: [{  
+    name: users_name,  
+    type_member: String,  
+    notify: boolean  
+  }],  
 
-	goals: [{  
-		name: String,  
-		description: String,  
-		date_begin: Date,  
-		date_dream: Date,  
-		date_end: Date,  
-		realocate: boolean,  
-		expired: booelan,  
+  goals: [{  
+    name: String,  
+    description: String,  
+    date_begin: Date,  
+    date_dream: Date,  
+    date_end: Date,  
+    realocate: boolean,  
+    expired: booelan,  
 
-		tags: [],  
+    tags: []  
+  }],  
 
-		activities: [{  
-			name: String,  
-			description: String,  
-			date_begin: Date,  
-			date_dream: Date,  
-			date_end: Date,  
-			realocate: boolean,  
-			expired: boolean  
-		}],  
-	}],  
+  comments: [{  
+    user_name: users.name,  
+    text: String,  
+    date_comment: String  
+  }]  
+}   
+```
 
-	comments: [{  
-		user_name: users.name,  
-		text: String,  
-		date_comment: String  
-	}]  
+
+## Qual a modelagem da sua coleção retirada de `projects`?  
+
+A coleção retirada de `projects` foi `activities`. Sua modelagem ficou da seguinte maneira:  
+
+```  
+activities{  
+  id_project: project_id,  
+  goal_name: goal_name,
+  name: String,  
+  description: String,  
+  date_begin: Date,  
+  date_dream: Date,  
+  date_end: Date,  
+  realocate: boolean,  
+  expired: boolean  
 }  
 ```
 
@@ -90,27 +99,25 @@ projects{
 Primeiramente, fiz um único cadastro para teste:  
 
 ```  
-test> use be-mean-mongodb
-switched to db be-mean-mongodb
-
 be-mean-mongodb> var json = {  
-	"name": "Ednilson Amaral",  
-	"bio": "Desenvolvedor Frontend",  
-	"email": "ednilsonamaral.ti@gmail.com",  
-	"auth": [  
-		{  
-			"username": "ednilson",  
-			"password": "123456",  
-			"last_access": Date.now(),  
-			"online": false,  
-			"disable": false,  
-			"hash_token": "oi",  
-		}  
-	],    
-	"date_register": Date.now(),  
-	"avatar_path": "oi"}  
+  "name": "Ednilson Amaral",  
+  "bio": "Desenvolvedor Frontend",  
+  "email": "ednilsonamaral.ti@gmail.com",  
+  "auth": [  
+    {  
+      "username": "ednilson",  
+      "password": "123456",  
+      "last_access": Date.now(),  
+      "online": false,   
+      "disable": false,   
+      "hash_token": null  
+    }  
+  ],  
+  "date_register": Date.now(),  
+  "avatar_path": "oi"  
+}
 
-be-mean-mongodb> json  
+EDNILSON-NB(mongod-3.2.0) be-mean-mongodb> json  
 {  
   "name": "Ednilson Amaral",  
   "bio": "Desenvolvedor Frontend",  
@@ -119,13 +126,13 @@ be-mean-mongodb> json
     {  
       "username": "ednilson",  
       "password": "123456",  
-      "last_access": 1450115832467,  
+      "last_access": 1450486386448,  
       "online": false,  
       "disable": false,  
-      "hash_token": "oi"  
+      "hash_token": null  
     }  
   ],  
-  "date_register": 1450115832467,  
+  "date_register": 1450486386448,  
   "avatar_path": "oi"  
 }  
 
@@ -137,7 +144,7 @@ WriteResult({
 
 be-mean-mongodb> db.users.find()  
 {  
-  "_id": ObjectId("566f030c0b5e9fe3f7610e1d"),  
+  "_id": ObjectId("5674aade9fda77e81be555da"),  
   "name": "Ednilson Amaral",  
   "bio": "Desenvolvedor Frontend",  
   "email": "ednilsonamaral.ti@gmail.com",  
@@ -145,13 +152,13 @@ be-mean-mongodb> db.users.find()
     {  
       "username": "ednilson",  
       "password": "123456",  
-      "last_access": 1450115832467,  
+      "last_access": 1450486386448,  
       "online": false,  
       "disable": false,  
-      "hash_token": "oi"  
+      "hash_token": null  
     }  
   ],  
-  "date_register": 1450115832467,  
+  "date_register": 1450486386448,  
   "avatar_path": "oi"  
 }  
 Fetched 1 record(s) in 3ms  
@@ -161,8 +168,8 @@ Após essa inserção de teste, inserir os 9 usuários restantes através de um 
 
 ```  
 ednilson@EDNILSON-NB:/var/www/be-mean-instagram-mongodb$ mongoimport --db be-mean-mongodb --collection users --file users.json  
-2015-12-14T16:17:03.615-0200	connected to: localhost  
-2015-12-14T16:17:03.618-0200	imported 9 documents  
+2015-12-18T22:56:51.030-0200  connected to: localhost  
+2015-12-18T22:56:51.222-0200  imported 9 documents  
 ```  
 
 Eu não utilizei o parâmetro `--drop` junto do `mongoimport` devido que o registro que já tinha na coleção `users` também será utilizado posteriormente.
@@ -170,91 +177,148 @@ Eu não utilizei o parâmetro `--drop` junto do `mongoimport` devido que o regis
 
 ### Projetos  
 
-```  
-ednilson@EDNILSON-NB:/var/www/be-mean-instagram-mongodb$ mongoimport --db be-mean-mongodb --collection projects --drop --file projects.json  
-2015-12-14T17:13:16.227-0200	connected to: localhost  
-2015-12-14T17:13:16.227-0200	dropping: be-mean-mongodb.projects  
-2015-12-14T17:13:16.383-0200	imported 5 documents  
-```  
-
-O arquivo `projects.json`, contém:  
+Resolvi utilizar o modo manual para fazer o relacionamento necessário no `array` de `comments` e também de `members`. Então, criei uma variável utilizando Regex para buscar um nome de usuário.  
 
 ```  
-{"name": "Projeto 1","description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit","date_begin": null,"date_dream": null,"date_end": null,"visible": false,"realocate": false,"expired": false,"visualizable_mod": null,"tags": ["web", "nfl", "be mean"],"members": [{"name": "Edson Arantes do Nascimento","type_member": "Tipo B","notify": false},{"name": "Carlitos Tevez","type_member": "Tipo C","notify": false},{"name": "Stephen Curry","type_member": "Tipo A","notify": false},{"name": "Aaron Rodgers","type_member": "Tipo A","notify": false},{"name": "Tom Brady","type_member": "Tipo A","notify": false}],"goals": [{"name": "Vagner Love","description": "Recebeu passe de Renato Augusto, goleiro adversário se adiantou e fez um golaço de cobertura!","date_begin": null,"date_dream": null,"date_end": null,"realocate": false,"expired": false,"tags": ["cobertura", "chapeuzinho", "por cima"],"activities": [{"name": "Atividade 1","description": "Descrição completa da atividade 1","date_begin": null,"date_dream": null,"date_end": null,"realocate": false,"expired": false},{"name": "Atividade 2","description": "Descrição completa da atividade 2","date_begin": null,"date_dream": null,"date_end": null,"realocate": false,"expired": false}]}],"comments": [{"user_name": "Ednilson Amaral","text": "Belo gol de Vagner Love. Demorou para desencantar, mas depois que desencantou, não pára mais de fazer gol! Isso é ótimo para ele e perfeito para o Corinthians, parça!","date_comment": null}]}  
-
-{"name": "Projeto 2","description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit","date_begin": null,"date_dream": null,"date_end": null,"visible": false,"realocate": false,"expired": false,"visualizable_mod": null,"tags": ["zaga", "escanteio", "fundo"],"members": [{"name": "GPP","type_member": "Tipo B","notify": false},{"name": "Odel Bechkam Jr","type_member": "Tipo C","notify": false},{"name": "Victor Cruz","type_member": "Tipo A","notify": false},{"name": "Bill Bellicheck","type_member": "Tipo A","notify": false},{"name": "Luis Enrique","type_member": "Tipo A","notify": false}],"goals": [{"name": "Vermaleen","description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit","date_begin": null,"date_dream": null,"date_end": null,"realocate": false,"expired": false,"tags": ["jovem", "cabeça", "zagueiro"],"activities": [{"name": "Atividade 1","description": "Descrição completa da atividade 1","date_begin": null,"date_dream": null,"date_end": null,"realocate": false,"expired": false},{"name": "Atividade 2","description": "Descrição completa da atividade 2","date_begin": null,"date_dream": null,"date_end": null,"realocate": false,"expired": false}]}],"comments": [{"user_name": "Érica dos Santos","text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit","date_comment": null}]}  
-
-{"name": "Projeto 3","description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit","date_begin": null,"date_dream": null,"date_end": null,"visible": false,"realocate": false,"expired": false,"visualizable_mod": null,"tags": ["zaga", "ataque", "sozinho"],"members": [{"name": "PVC","type_member": "Tipo B","notify": false},{"name": "Everaldo Marques","type_member": "Tipo C","notify": false},{"name": "Carlão Barreto","type_member": "Tipo A","notify": false},{"name": "Mauro Betting","type_member": "Tipo A","notify": false},{"name": "Nivaldo Pietro","type_member": "Tipo A","notify": false}],"goals": [{"name": "Cristiano Ronaldo","description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit","date_begin": null,"date_dream": null,"date_end": null,"realocate": false,"expired": false,"tags": ["fila", "time", "cade"],"activities": [{"name": "Atividade 1","description": "Descrição completa da atividade 1","date_begin": null,"date_dream": null,"date_end": null,"realocate": false,"expired": false},{"name": "Atividade 2","description": "Descrição completa da atividade 2","date_begin": null,"date_dream": null,"date_end": null,"realocate": false,"expired": false}]}],"comments": [{"user_name": "Laís Ramos","text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit","date_comment": null}]}  
-
-{"name": "Projeto 4","description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit","date_begin": null,"date_dream": null,"date_end": null,"visible": false,"realocate": false,"expired": false,"visualizable_mod": null,"tags": ["vaca", "meia lua", "gremio"],"members": [{"name": "Juninho Pernambucano","type_member": "Tipo B","notify": false},{"name": "William","type_member": "Tipo C","notify": false},{"name": "Junior","type_member": "Tipo A","notify": false},{"name": "Luis Roberto","type_member": "Tipo A","notify": false},{"name": "Cleber Machado","type_member": "Tipo A","notify": false}],"goals": [{"name": "Ronaldinho Gaúcho","description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit","date_begin": null,"date_dream": null,"date_end": null,"realocate": false,"expired": false,"tags": ["meia lua", "drible da vaca", "tchau"],"activities": [{"name": "Atividade 1","description": "Descrição completa da atividade 1","date_begin": null,"date_dream": null,"date_end": null,"realocate": false,"expired": false},{"name": "Atividade 2","description": "Descrição completa da atividade 2","date_begin": null,"date_dream": null,"date_end": null,"realocate": false,"expired": false}]}],	"comments": [{"user_name": "Carlos Almeida","text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit","date_comment": null}]}  
-
+be-mean-mongodb> var nome = {"name": /jean/i}  
+be-mean-mongodb> nome  
 {  
-	"name": "Projeto 5",  
-	"description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit",  
-	"date_begin": null,  
-	"date_dream": null,  
-	"date_end": null,  
-	"visible": false,  
-	"realocate": false,  
-	"expired": false,  
-	"visualizable_mod": null,  
-  
-	"tags": ["internacional", "barcelona", "espanhol"],  
+  "name": /jean/i  
+}  
 
-	"members": [  
-		{  
-		"name": "Ronaldo",  
-		"type_member": "Tipo B",  
-		"notify": false  
-		},  
+be-mean-mongodb> db.users.find(nome)  
+{  
+  "_id": ObjectId("5674abfcc1519c3ff37103f3"),  
+  "name": "Jean Carlo",  
+  "bio": "Carinha mais ou menos fodinha",  
+  "email": "admin@admin.com",  
+  "auth": [  
+    {  
+      "username": "suissa",  
+      "password": "123456",  
+      "last_access": null,  
+      "online": false,  
+      "disable": false,  
+      "hash_token": null  
+    }  
+  ],  
+  "date_register": null,  
+  "avatar_path": null  
+}  
+Fetched 1 record(s) in 3ms  
 
-		{  
-		"name": "Milton Leite",  
-		"type_member": "Tipo C",  
-		"notify": false  
-		},  
+be-mean-mongodb> var comment_name = "Jean Carlo"  
+be-mean-mongodb> comment_name  
+Jean Carlo  
 
-		{  
-		"name": "Galvão Bueno",  
-		"type_member": "Tipo A",  
-		"notify": false  
-		},  
+be-mean-mongodb> var nome = {"name": /ednilson/i}  
+be-mean-mongodb> nome  
+{  
+  "name": /ednilson/i  
+}  
 
-		{  
-		"name": "Eli Manning",  
-		"type_member": "Tipo A",  
-		"notify": false  
-		},  
-  
-		{  
-		"name": "Peyton Manning",  
-		"type_member": "Tipo A",  
-		"notify": false  
-		}	  
-	],  
+be-mean-mongodb> db.users.find(nome)  
+{  
+  "_id": ObjectId("5674aade9fda77e81be555da"),  
+  "name": "Ednilson Amaral",  
+  "bio": "Desenvolvedor Frontend",  
+  "email": "ednilsonamaral.ti@gmail.com",  
+  "auth": [  
+    {  
+      "username": "ednilson",  
+      "password": "123456",  
+      "last_access": 1450486386448,  
+      "online": false,  
+      "disable": false,  
+      "hash_token": null  
+    }  
+  ],  
+  "date_register": 1450486386448,  
+  "avatar_path": "oi"  
+}  
+Fetched 1 record(s) in 4ms  
 
-	"goals": [{  
-		"name": "Lionel Messi",  
-		"description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit",  
-		"date_begin": null,  
-		"date_dream": null,  
-		"date_end": null,  
-		"realocate": false,  
-		"expired": false,  
+be-mean-mongodb> var membro_one = "Ednilson Amaral"  
+be-mean-mongodb> membro_one  
+Ednilson Amaral  
+```  
 
-		"tags": ["falta", "angulo", "barreira"],  
+Repeti esses passos tanto para os comentários como para membros. No caso da variável para membros, eu criei:  
 
-		"activities": []  
-	}],  
+* `membro_one`;  
+* `membro_two`;  
+* `membro_three`;  
+* `membro_four`;  
+* `membro_five`;  
 
-	"comments": [  
-		{  
-		"user_name": "José da Silva",  
-		"text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit",  
-		"date_comment": null  
-		}  
-	]  
-}   
+Criei essas variáveis seguindo o mesmo processo, buscando um usuário utilizando Regex e então armazenando o nome dele na variável desejada. Em seguida, criei uma variável `projeto_one` para inserir os projetos, um a um.  
+
+```  
+var projeto = {  
+  "name": "Projeto 1",  
+  "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit",  
+  "date_begin": 1450490066921,  
+  "date_dream": null,  
+  "date_end": null,  
+  "visible": true,  
+  "realocate": false,  
+  "expired": false,  
+  "visualizable_mod": null,  
+
+  "tags": ["vaca", "meia lua", "gremio"],  
+
+  "members": [  
+    {  
+      "name": "Ednilson Amaral",  
+      "type_member": "Tipo A",  
+      "notify": false  
+    },  
+
+    {  
+      "name": "José da Silva",  
+      "type_member": "Tipo B",  
+      "notify": false  
+    },  
+
+    {  
+      "name": "Carlos Almeida",  
+      "type_member": "Tipo X",  
+      "notify": false  
+    },  
+
+    {  
+      "name": "Laís Ramos",  
+      "type_member": "Tipo B",  
+      "notify": false  
+    },  
+
+    {  
+      "name": "Jéssica Bueno",  
+      "type_member": "Tipo Z",  
+      "notify": false  
+    }  
+    ],  
+
+    "goals": [{  
+      "name": "Ronaldinho Gaúcho",  
+      "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit",  
+      "date_begin": 1450490066921,  
+      "date_dream": null,  
+      "date_end": null,  
+      "realocate": false,  
+      "expired": false,  
+
+      "tags": ["meia lua", "drible da vaca", "tchau"],  
+
+      "comments": [{  
+        "user_name": "Jean Carlo",  
+        "text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit",  
+        "date_comment": 1450490066921  
+      }]  
+    }]  
+}  
+
+be-mean-mongodb> db.projects.save(projeto)
 ```
 
 
@@ -263,206 +327,166 @@ O arquivo `projects.json`, contém:
 ### Liste as informações dos membros de 1 projeto específico que deve ser buscado pelo seu nome de forma a não ligar para maiúsculas e minúsculas.  
 
 ```  
-be-mean-mongodb> db.projects.find({"name": /projeto 1/i})  
+be-mean-mongodb> var busca = {"name": /projeto 1/i}  
+be-mean-mongodb> busca  
 {  
-  "_id": ObjectId("566f1913d0db00d58dd9aafe"),  
+  "name": /projeto 1/i  
+}  
+
+be-mean-mongodb> db.projects.find(busca)  
+{  
+  "_id": ObjectId("5674bc17c1519c3ff37103fd"),  
   "name": "Projeto 1",  
   "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit",  
-  "date_begin": null,  
+  "date_begin": 1450490066921,  
   "date_dream": null,  
   "date_end": null,  
-  "visible": false,  
+  "visible": true,  
   "realocate": false,  
   "expired": false,  
   "visualizable_mod": null,  
   "tags": [  
-    "web",  
-    "nfl",  
-    "be mean"  
+    "vaca",  
+    "craque",  
+    "gremio"  
   ],  
   "members": [  
     {  
-      "name": "Edson Arantes do Nascimento",  
+      "name": "Ednilson Amaral",  
+      "type_member": "Tipo A",  
+      "notify": false  
+    },  
+    {  
+      "name": "José da Silva",  
       "type_member": "Tipo B",  
       "notify": false  
     },  
     {  
-      "name": "Carlitos Tevez",  
-      "type_member": "Tipo C",  
+      "name": "Carlos Almeida",  
+      "type_member": "Tipo X",  
       "notify": false  
     },  
     {  
-      "name": "Stephen Curry",  
-      "type_member": "Tipo A",  
+      "name": "Laís Ramos",  
+      "type_member": "Tipo B",  
       "notify": false  
     },  
     {  
-      "name": "Aaron Rodgers",  
-      "type_member": "Tipo A",  
-      "notify": false  
-    },  
-    {  
-      "name": "Tom Brady",  
-      "type_member": "Tipo A",  
+      "name": "Jéssica Bueno",  
+      "type_member": "Tipo Z",  
       "notify": false  
     }  
   ],  
   "goals": [  
     {  
-      "name": "Vagner Love",  
-      "description": "Recebeu passe de Renato Augusto, goleiro adversário se adiantou e fez um golaço de cobertura!",  
-      "date_begin": null,  
+      "name": "Ronaldinho Gaúcho",  
+      "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit",  
+      "date_begin": 1450490066921,  
       "date_dream": null,  
       "date_end": null,  
       "realocate": false,  
       "expired": false,  
       "tags": [  
-        "cobertura",  
-        "chapeuzinho",  
-        "por cima"  
+        "meia lua",  
+        "drible da vaca",  
+        "tchau"  
       ],  
-      "activities": [  
+      "comments": [  
         {  
-          "name": "Atividade 1",  
-          "description": "Descrição completa da atividade 1",  
-          "date_begin": null,  
-          "date_dream": null,  
-          "date_end": null,  
-          "realocate": false,  
-          "expired": false  
-        },  
-        {  
-          "name": "Atividade 2",  
-          "description": "Descrição completa da atividade 2",  
-          "date_begin": null,  
-          "date_dream": null,  
-          "date_end": null,  
-          "realocate": false,  
-          "expired": false  
+          "user_name": "Jean Carlo",  
+          "text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit",  
+          "date_comment": 1450490066921  
         }  
       ]  
     }  
-  ],  
-  "comments": [  
-    {  
-      "user_name": "Ednilson Amaral",  
-      "text": "Belo gol de Vagner Love. Demorou para desencantar, mas depois que desencantou, não pára mais de fazer gol! Isso é ótimo para ele e perfeito para o Corinthians, parça!",  
-      "date_comment": null  
-    }  
   ]  
 }  
-Fetched 1 record(s) in 10ms  
+Fetched 1 record(s) in 3ms    
 ```
 
 
 ### Liste todos os projetos com a tag que você escolheu para os 3 projetos em comum.  
 
 ```  
-be-mean-mongodb> var query = {tags: {$in: [/web/i]}}  
-
-be-mean-mongodb> db.projects.find(query, {name: 1})  
+be-mean-mongodb> var query = {tags: {$in: [/vaca/i]}}  
+be-mean-mongodb> query  
 {  
-  "_id": ObjectId("566f1913d0db00d58dd9aafe"),  
+  "tags": {  
+    "$in": [  
+      /vaca/i  
+    ]  
+  }  
+}  
+
+db.projects.find(query, {name: 1})  
+{  
+  "_id": ObjectId("5674bc17c1519c3ff37103fd"),  
   "name": "Projeto 1"  
 }  
 {  
-  "_id": ObjectId("566f1913d0db00d58dd9aaff"),  
-  "name": "Projeto 2"  
-}  
-{  
-  "_id": ObjectId("566f1913d0db00d58dd9ab00"),  
+  "_id": ObjectId("5674bc17c1519c3ff37103fe"),  
   "name": "Projeto 3"  
 }  
-Fetched 3 record(s) in 3ms  
+{  
+  "_id": ObjectId("5674bc17c1519c3ff37103ff"),  
+  "name": "Projeto 2"  
+}  
+Fetched 3 record(s) in 5ms  
 ```
 
 
 ### Liste apenas os nomes de todas as atividades para todos os projetos.  
 
 ```  
-be-mean-mongodb> var query = {'name': 1, 'goals.activities.name': 1}  
-
-be-mean-mongodb> query  
+be-mean-mongodb> db.activities.find({}, {name_project: 1, name: 1})  
 {  
-  "name": 1,  
-  "goals.activities.name": 1  
+  "_id": ObjectId("5674c077c1519c3ff3710403"),  
+  "name_project": "Projeto 1",  
+  "name": "Nome da Atividade 1"  
 }  
 
-be-mean-mongodb> db.projects.find({}, query)  
 {  
-  "_id": ObjectId("566f1913d0db00d58dd9aafe"),  
-  "name": "Projeto 1",  
-  "goals": [  
-    {  
-      "activities": [  
-        {  
-          "name": "Atividade 1"  
-        },  
-        {  
-          "name": "Atividade 2"  
-        }  
-      ]  
-    }  
-  ]  
+  "_id": ObjectId("5674c077c1519c3ff3710404"),  
+  "name_project": "Projeto 1",  
+  "name": "Nome da Atividade 2"  
 }  
+
 {  
-  "_id": ObjectId("566f1913d0db00d58dd9aaff"),  
-  "name": "Projeto 2",  
-  "goals": [  
-    {  
-      "activities": [  
-        {  
-          "name": "Atividade 1"  
-        },  
-        {  
-          "name": "Atividade 2"  
-        }  
-      ]  
-    }  
-  ]  
+  "_id": ObjectId("5674c077c1519c3ff3710405"),  
+  "name_project": "Projeto 2",  
+  "name": "Nome da Atividade 1"  
 }  
+
 {  
-  "_id": ObjectId("566f1913d0db00d58dd9ab00"),  
-  "name": "Projeto 3",  
-  "goals": [  
-    {  
-      "activities": [  
-        {  
-          "name": "Atividade 1"  
-        },  
-        {  
-          "name": "Atividade 2"  
-        }  
-      ]  
-    }  
-  ]  
+  "_id": ObjectId("5674c077c1519c3ff3710406"),  
+  "name_project": "Projeto 2",  
+  "name": "Nome da Atividade 2"  
 }  
+
 {  
-  "_id": ObjectId("566f1913d0db00d58dd9ab01"),  
-  "name": "Projeto 5",  
-  "goals": [  
-    {  
-      "activities": [ ]  
-    }  
-  ]  
+  "_id": ObjectId("5674c077c1519c3ff3710407"),  
+  "name_project": "Projeto 3",  
+  "name": "Nome da Atividade 1"  
 }  
+
 {  
-  "_id": ObjectId("566f1913d0db00d58dd9ab02"),  
-  "name": "Projeto 4",  
-  "goals": [  
-    {  
-      "activities": [  
-        {  
-          "name": "Atividade 1"  
-        },  
-        {  
-          "name": "Atividade 2"  
-        }  
-      ]  
-    }  
-  ]  
+  "_id": ObjectId("5674c077c1519c3ff3710408"),  
+  "name_project": "Projeto 3",  
+  "name": "Nome da Atividade 2"  
 }  
-Fetched 5 record(s) in 5ms  
+
+{  
+  "_id": ObjectId("5674c077c1519c3ff3710409"),  
+  "name_project": "Projeto 4",  
+  "name": "Nome da Atividade 1"  
+}  
+
+{  
+  "_id": ObjectId("5674c077c1519c3ff371040a"),  
+  "name_project": "Projeto 4",  
+  "name": "Nome da Atividade 2"  
+}  
+Fetched 8 record(s) in 5ms  
 ```
 
 
@@ -481,82 +505,82 @@ Pelo o que li na documentação oficial do MongoDB, na parte que explica o `$siz
 ```  
 be-mean-mongodb> db.projects.find({}, {'members.name': 1}).skip(1)  
 {  
-  "_id": ObjectId("566f1913d0db00d58dd9aaff"),  
+  "_id": ObjectId("5674bc17c1519c3ff37103fe"),  
   "members": [  
     {  
-      "name": "GPP"  
+      "name": "Ednilson Amaral"  
     },  
     {  
-      "name": "Odel Bechkam Jr"  
+      "name": "José da Silva"  
     },  
     {  
-      "name": "Victor Cruz"  
+      "name": "Jean Carlo"  
     },  
     {  
-      "name": "Bill Bellicheck"  
+      "name": "Admin"  
     },  
     {  
-      "name": "Luis Enrique"  
+      "name": "Érica dos Santos"  
     }  
   ]  
 }  
 {  
-  "_id": ObjectId("566f1913d0db00d58dd9ab00"),  
+  "_id": ObjectId("5674bc17c1519c3ff37103ff"),  
   "members": [  
     {  
-      "name": "PVC"  
+      "name": "Rodrigo Amaral"  
     },  
     {  
-      "name": "Everaldo Marques"  
+      "name": "Marcos de la Rua"  
     },  
     {  
-      "name": "Carlão Barreto"  
+      "name": "Jean Carlo"  
     },  
     {  
-      "name": "Mauro Betting"  
+      "name": "Admin"  
     },  
     {  
-      "name": "Nivaldo Pietro"  
+      "name": "Érica dos Santos"  
     }  
   ]  
 }  
 {  
-  "_id": ObjectId("566f1913d0db00d58dd9ab01"),  
+  "_id": ObjectId("5674bc17c1519c3ff3710400"),  
   "members": [  
     {  
-      "name": "Ronaldo"  
+      "name": "Laís Ramos"  
     },  
     {  
-      "name": "Milton Leite"  
+      "name": "Jéssica Bueno"  
     },  
     {  
-      "name": "Galvão Bueno"  
+      "name": "Rodrigo Amaral"  
     },  
     {  
-      "name": "Eli Manning"  
+      "name": "Marcos de la Rua"  
     },  
     {  
-      "name": "Peyton Manning"  
+      "name": "Jean Carlo"  
     }  
   ]  
 }  
 {  
-  "_id": ObjectId("566f1913d0db00d58dd9ab02"),  
+  "_id": ObjectId("5674bc17c1519c3ff3710401"),  
   "members": [  
     {  
-      "name": "Juninho Pernambucano"  
+      "name": "Admin"  
     },  
     {  
-      "name": "William"  
+      "name": "Érica dos Santos"  
     },  
     {  
-      "name": "Junior"  
+      "name": "Ednilson Amaral"  
     },  
     {  
-      "name": "Luis Roberto"  
+      "name": "Carlos Almeida"  
     },  
     {  
-      "name": "Cleber Machado"  
+      "name": "Laís Ramos"  
     }  
   ]  
 }  
@@ -568,49 +592,62 @@ Fetched 4 record(s) in 7ms
 
 ### Adicione para todos os projetos o campo views: 0.  
 
-Eu não consegui inserir em todos os 5 projetos de uma só vez com o código abaixo:  
-
 ```  
-be-mean-mongodb> var query = {}  
-  
+be-mean-mongodb> var query = {"name": /projeto 1/i}  
 be-mean-mongodb> var mod = {$set: {views: 0}}  
-
-be-mean-mongodb> mod  
-{  
-  "$set": {  
-    "views": 0  
-  }  
-}  
-
-be-mean-mongodb> db.projects.update(query, mod)  
-Updated 1 existing record(s) in 3ms  
+be-mean-mongodb> var opt = {upsert: true}  
+be-mean-mongodb> db.projects.update(query, mod, opt)  
+Updated 1 existing record(s) in 4ms  
 WriteResult({  
   "nMatched": 1,  
   "nUpserted": 0,  
-  "nModified": 0  
+  "nModified": 1  
+})  
+
+be-mean-mongodb> var query = {"name": /projeto 2/i}  
+be-mean-mongodb> var mod = {$set: {views: 0}}  
+be-mean-mongodb> var opt = {upsert: true}  
+be-mean-mongodb> db.projects.update(query, mod, opt)  
+Updated 1 existing record(s) in 4ms  
+WriteResult({  
+  "nMatched": 1,  
+  "nUpserted": 0,  
+  "nModified": 1  
+})  
+
+be-mean-mongodb> var query = {"name": /projeto 3/i}  
+be-mean-mongodb> var mod = {$set: {views: 0}}  
+be-mean-mongodb> var opt = {upsert: true}  
+be-mean-mongodb> db.projects.update(query, mod, opt)  
+Updated 1 existing record(s) in 4ms  
+WriteResult({  
+  "nMatched": 1,  
+  "nUpserted": 0,  
+  "nModified": 1  
+})  
+
+be-mean-mongodb> var query = {"name": /projeto 4/i}  
+be-mean-mongodb> var mod = {$set: {views: 0}}  
+be-mean-mongodb> var opt = {upsert: true}  
+be-mean-mongodb> db.projects.update(query, mod, opt)  
+Updated 1 existing record(s) in 4ms  
+WriteResult({  
+  "nMatched": 1,  
+  "nUpserted": 0,  
+  "nModified": 1  
+})  
+
+be-mean-mongodb> var query = {"name": /projeto 5/i}  
+be-mean-mongodb> var mod = {$set: {views: 0}}  
+be-mean-mongodb> var opt = {upsert: true}  
+be-mean-mongodb> db.projects.update(query, mod, opt)  
+Updated 1 existing record(s) in 4ms  
+WriteResult({  
+  "nMatched": 1,  
+  "nUpserted": 0,  
+  "nModified": 1  
 })  
 ```  
-
-Tentei passando como parâmetro os {} vazios, para que inserisse em todos os objetos. Mas não foi possível e não entendi o motivo disso não ter dado certo.  
-
-Como alternativa, resolvi fazer uma condição `for` para ir modificando o nome do projeto, assim ir adicionando o campo `views: 0`. Sinceramente, odiei e fiquei com vergonha dessa solução, pior que amadora. :/  
-
-```  
-be-mean-mongodb> for(var i=0; i<=5; i++){  
-  var query = {"name": "Projeto " + i};  
-  var mod = {$set: {views: 0}};  
-
-  db.projects.update(query, mod);  
- 
-  i++  
-}  
-
-Updated 0 record(s) in 2ms  
-Updated 1 existing record(s) in 2ms  
-Updated 1 existing record(s) in 3ms  
-4  
-}  
-```
 
 
 ### Adicione 1 tag diferente para cada projeto.  
@@ -628,7 +665,7 @@ be-mean-mongodb> for(var i=0; i<=5; i++){
 
 Updated 0 record(s) in 3ms  
 Updated 1 existing record(s) in 3ms  
-Updated 1 existing record(s) in 3ms  
+Updated 1 existing record(s) in 2ms  
 4  
 ```
 
@@ -637,7 +674,7 @@ Updated 1 existing record(s) in 3ms
 
 ```  
 be-mean-mongodb> var query = {"name": "Projeto 1"}  
-be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 1", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Admin", "type_member": "Tipo A", "notify": false}]}}  
 be-mean-mongodb> db.projects.update(query, mod)  
 
 Updated 1 existing record(s) in 3ms  
@@ -647,7 +684,7 @@ WriteResult({
   "nModified": 1  
 })  
 
-be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 2", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Jean Carlo", "type_member": "Tipo A", "notify": false}]}}  
 be-mean-mongodb> db.projects.update(query, mod)  
 
 Updated 1 existing record(s) in 6ms  
@@ -658,7 +695,7 @@ WriteResult({
 })  
 
 be-mean-mongodb> var query = {"name": "Projeto 2"}  
-be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 1", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Ednilson Amaral", "type_member": "Tipo A", "notify": false}]}}  
 be-mean-mongodb> db.projects.update(query, mod)  
 
 Updated 1 existing record(s) in 9ms  
@@ -668,7 +705,7 @@ WriteResult({
   "nModified": 1  
 })  
 
-be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 2", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Jéssica Bueno", "type_member": "Tipo A", "notify": false}]}}  
 be-mean-mongodb> db.projects.update(query, mod)  
 
 Updated 1 existing record(s) in 5ms  
@@ -679,7 +716,7 @@ WriteResult({
 })  
 
 be-mean-mongodb> var query = {"name": "Projeto 3"}  
-be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 1", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Rodrigo Amaral", "type_member": "Tipo A", "notify": false}]}}  
 be-mean-mongodb> db.projects.update(query, mod)  
 
 Updated 1 existing record(s) in 3ms  
@@ -689,7 +726,7 @@ WriteResult({
   "nModified": 1  
 })  
 
-be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 2", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Laís Ramos", "type_member": "Tipo A", "notify": false}]}}  
 be-mean-mongodb> db.projects.update(query, mod)  
 
 Updated 1 existing record(s) in 2ms  
@@ -700,7 +737,7 @@ WriteResult({
 })  
 
 be-mean-mongodb> var query = {"name": "Projeto 4"}  
-be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 1", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Admin", "type_member": "Tipo A", "notify": false}]}}  
 be-mean-mongodb> db.projects.update(query, mod)  
 
 Updated 1 existing record(s) in 8ms  
@@ -710,7 +747,7 @@ WriteResult({
   "nModified": 1  
 })  
 
-be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 2", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Ednilson Amaral", "type_member": "Tipo A", "notify": false}]}}  
 be-mean-mongodb> db.projects.update(query, mod)  
 
 Updated 1 existing record(s) in 7ms  
@@ -721,7 +758,7 @@ WriteResult({
 })  
 
 be-mean-mongodb> var query = {"name": "Projeto 5"}  
-be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 1", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Jean Carlo", "type_member": "Tipo A", "notify": false}]}}  
 be-mean-mongodb> db.projects.update(query, mod)  
 
 Updated 1 existing record(s) in 3ms  
@@ -731,7 +768,7 @@ WriteResult({
   "nModified": 1  
 })  
 
-be-mean-mongodb> var mod = {$push: {"members": [{"name": "Fulano 2", "type_member": "Tipo A", "notify": false}]}}  
+be-mean-mongodb> var mod = {$push: {"members": [{"name": "Carlos Almeida", "type_member": "Tipo A", "notify": false}]}}  
 be-mean-mongodb> db.projects.update(query, mod)  
 
 Updated 1 existing record(s) in 6ms  
@@ -794,9 +831,7 @@ be-mean-mongodb> var mod = {
     "realocate": false,  
     "expired": false,  
 
-    "tags": [],  
-
-    "activities": []  
+    "tags": [] 
     }],  
 
     "comments": []  
@@ -843,8 +878,7 @@ be-mean-mongodb> db.projects.find(query)
       "date_end": null,  
       "realocate": false,  
       "expired": false,  
-      "tags": [ ],  
-      "activities": [ ]  
+      "tags": [ ],   
     }  
   ],  
   "comments": [ ]  
@@ -880,10 +914,45 @@ WriteResult({
 ### Apague todos os projetos que não possuam atividades.  
 
 ```  
-be-mean-mongodb> var query = {"goals.activities": []}  
+be-mean-mongodb> db.activities.find({}, {name_project: 1})  
+{  
+  "_id": ObjectId("5674c077c1519c3ff3710403"),  
+  "name_project": "Projeto 1"  
+}  
+{  
+  "_id": ObjectId("5674c077c1519c3ff3710404"),  
+  "name_project": "Projeto 1"  
+}  
+{  
+  "_id": ObjectId("5674c077c1519c3ff3710405"),  
+  "name_project": "Projeto 2"  
+}  
+{  
+  "_id": ObjectId("5674c077c1519c3ff3710406"),  
+  "name_project": "Projeto 2"  
+}  
+{  
+  "_id": ObjectId("5674c077c1519c3ff3710407"),  
+  "name_project": "Projeto 3"  
+}  
+{  
+  "_id": ObjectId("5674c077c1519c3ff3710408"),  
+  "name_project": "Projeto 3"  
+}  
+{  
+  "_id": ObjectId("5674c077c1519c3ff3710409"),  
+  "name_project": "Projeto 4"  
+}  
+{  
+  "_id": ObjectId("5674c077c1519c3ff371040a"),  
+  "name_project": "Projeto 4"  
+}  
+Fetched 8 record(s) in 6ms  
 
-be-mean-mongodb> db.projects.remove(query)  
-Removed 1 record(s) in 4ms  
+be-mean-mongodb> var remover = {"name": /projeto 5/i}  
+
+be-mean-mongodb> db.projects.remove(remover)  
+Removed 1 record(s) in 6ms  
 WriteResult({  
   "nRemoved": 1  
 })  
@@ -1157,14 +1226,14 @@ MongoDB shell version: 3.2.0
 connecting to: 127.0.0.1:27100/test  
 Mongo-Hacker 0.0.8  
 Server has startup warnings:  
-2015-12-15T01:43:36.680-0200 I CONTROL  [initandlisten] ** WARNING: You are running this process as the root user, which is not recommended.  
-2015-12-15T01:43:36.680-0200 I CONTROL  [initandlisten]  
-2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten]  
-2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/defrag is 'always'.  
-2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten] **        We suggest setting it to 'never'  
-2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten]  
-2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten] ** WARNING: soft rlimits too low. rlimits set to 22582 processes, 65536 files. Number of processes should be at least 32768 : 0.5 times number of files.  
-2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten]  
+2015-12-19T00:43:36.680-0200 I CONTROL  [initandlisten] ** WARNING: You are running this process as the root user, which is not recommended.  
+2015-12-19T00:43:36.680-0200 I CONTROL  [initandlisten]  
+2015-12-19T00:43:36.681-0200 I CONTROL  [initandlisten]  
+2015-12-19T00:43:36.681-0200 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/defrag is 'always'.  
+2015-12-19T00:43:36.681-0200 I CONTROL  [initandlisten] **        We suggest setting it to 'never'  
+2015-12-19T00:43:36.681-0200 I CONTROL  [initandlisten]  
+2015-12-19T00:43:36.681-0200 I CONTROL  [initandlisten] ** WARNING: soft rlimits too low. rlimits set to 22582 processes, 65536 files. Number of processes should be at least 32768 : 0.5 times number of files.  
+2015-12-19T00:43:36.681-0200 I CONTROL  [initandlisten]  
 EDNILSON-NB:27100(mongod-3.2.0) test> use be-mean-mongodb
 switched to db be-mean-mongodb
 EDNILSON-NB:27100(mongod-3.2.0) [PRIMARY] be-mean-mongodb>  
@@ -1178,14 +1247,14 @@ MongoDB shell version: 3.2.0
 connecting to: 127.0.0.1:27200/test  
 Mongo-Hacker 0.0.8  
 Server has startup warnings:  
-2015-12-15T01:43:36.680-0200 I CONTROL  [initandlisten] ** WARNING: You are running this process as the root user, which is not recommended.  
-2015-12-15T01:43:36.680-0200 I CONTROL  [initandlisten]  
-2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten]  
-2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/defrag is 'always'.  
-2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten] **        We suggest setting it to 'never'  
-2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten]  
-2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten] ** WARNING: soft rlimits too low. rlimits set to 22582 processes, 65536 files. Number of processes should be at least 32768 : 0.5 times number of files.  
-2015-12-15T01:43:36.681-0200 I CONTROL  [initandlisten]  
+2015-12-19T00:43:36.680-0200 I CONTROL  [initandlisten] ** WARNING: You are running this process as the root user, which is not recommended.  
+2015-12-19T00:43:36.680-0200 I CONTROL  [initandlisten]  
+2015-12-19T00:43:36.681-0200 I CONTROL  [initandlisten]  
+2015-12-19T00:43:36.681-0200 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/defrag is 'always'.  
+2015-12-19T00:43:36.681-0200 I CONTROL  [initandlisten] **        We suggest setting it to 'never'  
+2015-12-19T00:43:36.681-0200 I CONTROL  [initandlisten]  
+2015-12-19T00:43:36.681-0200 I CONTROL  [initandlisten] ** WARNING: soft rlimits too low. rlimits set to 22582 processes, 65536 files. Number of processes should be at least 32768 : 0.5 times number of files.  
+2015-12-19T00:43:36.681-0200 I CONTROL  [initandlisten]  
 EDNILSON-NB:27100(mongod-3.2.0) test> use be-mean-mongodb
 switched to db be-mean-mongodb
 EDNILSON-NB:27100(mongod-3.2.0) [SECONDARY] be-mean-mongodb>  

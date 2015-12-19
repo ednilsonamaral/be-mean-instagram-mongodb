@@ -30,7 +30,7 @@ projects{
 	tags: [],
 
 	members: [{
-		name: String,
+		name: users_name,
 		type_member: String,
 		notify: boolean
 	}],
@@ -44,17 +44,7 @@ projects{
 		realocate: boolean,
 		expired: booelan,
 
-		tags: [],
-
-		activities: [{
-			name: String,
-			description: String,
-			date_begin: Date,
-			date_dream: Date,
-			date_end: Date,
-			realocate: boolean,
-			expired: boolean
-		}],
+		tags: []
 	}],
 
 	comments: [{
@@ -62,4 +52,16 @@ projects{
 		text: String,
 		date_comment: String
 	}]
+}
+
+activities{
+	name_project: name_project,
+	goal_name: goal_name,
+	name: String,
+	description: String,
+	date_begin: Date,
+	date_dream: Date,
+	date_end: Date,
+	realocate: boolean,
+	expired: boolean
 }
